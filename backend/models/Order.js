@@ -22,6 +22,11 @@ const orderItemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
+  orderNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -29,63 +34,60 @@ const orderSchema = new mongoose.Schema({
   },
   items: [orderItemSchema],
   shippingAddress: {
-    address: {
-      type: String,
-      required: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    postalCode: {
-      type: String,
-      required: true,
-    },
-    country: {
-      type: String,
-      required: true,
-    },
+    name: String,
+    street: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String,
+    phone: String,
   },
   paymentMethod: {
     type: String,
-    required: true,
-    enum: ['Credit Card', 'PayPal', 'Cash on Delivery'],
+    enum: ['credit-card', 'debit-card', 'paypal', 'stripe', 'mock'],
+    default: 'mock',
   },
-  paymentResult: {
-    id: String,
-    status: String,
-    updateTime: String,
-    emailAddress: String,
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'completed', 'failed', 'refunded'],
+    default: 'pending',
   },
-  totalAmount: {
+  orderStatus: {
+    type: String,
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    default: 'pending',
+  },
+  totalPrice: {
     type: Number,
     required: true,
-    min: 0,
   },
-  status: {
-    type: String,
-    required: true,
-    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-    default: 'Pending',
+  shippingCost: {
+    type: Number,
+    default: 0,
   },
-  isPaid: {
-    type: Boolean,
-    default: false,
+  tax: {
+    type: Number,
+    default: 0,
   },
-  paidAt: {
-    type: Date,
-  },
-  isDelivered: {
-    type: Boolean,
-    default: false,
-  },
-  deliveredAt: {
-    type: Date,
-  },
+  notes: String,
+  trackingNumber: String,
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Generate order number before save
+orderSchema.pre('save', async function (next) {
+  if (!this.orderNumber) {
+    const count = await mongoose.model('Order').countDocuments();
+    this.orderNumber = `ORD-${Date.now()}-${count + 1}`;
+  }
+  next();
 });
 
 module.exports = mongoose.model('Order', orderSchema);

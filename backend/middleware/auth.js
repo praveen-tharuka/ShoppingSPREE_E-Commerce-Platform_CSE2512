@@ -25,18 +25,25 @@ const auth = async (req, res, next) => {
 
       next();
     } catch (error) {
-      console.error(error);
+      console.error('Auth Error:', error.message);
       if (error.name === 'TokenExpiredError') {
         return res.status(401).json({ message: 'Token expired' });
       }
       return res.status(401).json({ message: 'Not authorized, token failed' });
     }
-  }
-
-  if (!token) {
+  } else if (!token) {
     return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 
-module.exports = auth;
+// Admin authorization middleware
+const admin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized as admin' });
+  }
+};
+
+module.exports = { auth, admin };
 

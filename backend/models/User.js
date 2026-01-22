@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a name'],
     trim: true,
+    maxlength: [50, 'Name cannot be more than 50 characters'],
   },
   email: {
     type: String,
@@ -21,7 +22,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide a password'],
-    minlength: 6,
+    minlength: [6, 'Password must be at least 6 characters'],
     select: false,
   },
   role: {
@@ -29,7 +30,30 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'admin'],
     default: 'customer',
   },
+  phone: {
+    type: String,
+    default: null,
+  },
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String,
+  },
+  avatar: {
+    type: String,
+    default: 'https://via.placeholder.com/150',
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },

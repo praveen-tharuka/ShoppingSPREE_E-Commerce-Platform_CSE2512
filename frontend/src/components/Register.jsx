@@ -79,12 +79,19 @@ const Register = () => {
 
     if (result.success) {
       toast.success('Registration successful! Welcome!');
-      navigate('/dashboard');
+      
+      // Redirect based on user role with delay to ensure state updates
+      setTimeout(() => {
+        if (result.data && result.data.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/products');
+        }
+      }, 500);
     } else {
       toast.error(result.error);
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
