@@ -31,6 +31,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a product name'],
     trim: true,
+    maxlength: [100, 'Product name cannot exceed 100 characters'],
   },
   description: {
     type: String,
@@ -39,7 +40,11 @@ const productSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: [true, 'Please provide a product price'],
-    min: 0,
+    min: [0, 'Price cannot be negative'],
+  },
+  originalPrice: {
+    type: Number,
+    default: null,
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
@@ -48,26 +53,39 @@ const productSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: '/images/default-product.jpg',
+    default: 'https://via.placeholder.com/400',
   },
+  images: [String],
   stock: {
     type: Number,
-    required: true,
-    min: 0,
-    default: 0,
+    required: [true, 'Please provide stock quantity'],
+    min: [0, 'Stock cannot be negative'],
   },
-  ratings: {
+  sku: {
+    type: String,
+    unique: true,
+    required: [true, 'Please provide a SKU'],
+  },
+  rating: {
     type: Number,
+    min: [0, 'Rating must be between 0 and 5'],
+    max: [5, 'Rating must be between 0 and 5'],
     default: 0,
-    min: 0,
-    max: 5,
   },
-  numReviews: {
+  reviewCount: {
     type: Number,
     default: 0,
   },
   reviews: [reviewSchema],
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },

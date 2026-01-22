@@ -10,12 +10,19 @@ const categorySchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true,
+    default: '',
   },
   slug: {
     type: String,
-    required: true,
-    unique: true,
     lowercase: true,
+  },
+  image: {
+    type: String,
+    default: 'https://via.placeholder.com/300',
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
   createdAt: {
     type: Date,
@@ -23,14 +30,9 @@ const categorySchema = new mongoose.Schema({
   },
 });
 
-// Generate slug from name before saving
+// Auto-generate slug from name
 categorySchema.pre('save', function (next) {
-  if (this.isModified('name')) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-  }
+  this.slug = this.name.toLowerCase().replace(/\s+/g, '-');
   next();
 });
 
